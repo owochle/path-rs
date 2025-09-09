@@ -10,6 +10,8 @@ However, some choices where made from personal path style preferences, and are o
 - `~` is not supported and always considered as a litteral as there is no concept of current directory.
 - Path separator is `/`.
 - Paths can not have a prefix such as driver letters or protocols.
+- Symlinks are not supported for now, 
+  but they are planned and will be supported once I find a satisfying way to implement them.
 
 ## Special thanks
 Special thanks to a friend for their huge help in optimization and design of this crate.

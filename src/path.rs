@@ -90,6 +90,25 @@ fn rsplit_file_at_dot(file: &str) -> (Option<&str>, Option<&str>) {
     }
 }
 
+impl PartialEq for Path {
+    fn eq(&self, other: &Self) -> bool {
+        PartialEq::eq(&self.components(), &other.components())
+    }
+}
+
+
+impl PartialEq<str> for Path {
+    fn eq(&self, other: &str) -> bool {
+        self.eq(Path::new(other))
+    }
+}
+
+impl PartialEq<Path> for str {
+    fn eq(&self, other: &Path) -> bool {
+        other.eq(self)
+    }
+}
+
 #[cfg(feature = "alloc")]
 mod allocated_path {
     use alloc::borrow::ToOwned;
@@ -100,7 +119,18 @@ mod allocated_path {
 
     impl Path {
         pub fn join<P: AsRef<Path>>(&self, path: P) -> PathBuf {
-            todo!()
+            let r = path.as_ref();
+
+            if r.is_absolute() {
+                r.to_owned()
+            } else {
+                let mut p = self.to_owned();
+                for comp in path.as_ref().components() {
+                    p.push_component(comp);
+                }
+
+                p
+            }
         }
 
         pub fn resolve<P: AsRef<Path>>(&self, other: P) -> PathBuf {
@@ -139,23 +169,10 @@ mod allocated_path {
             PathBuf(String::from(self.0.to_owned()))
         }
     }
-}
 
-impl PartialEq for Path {
-    fn eq(&self, other: &Self) -> bool {
-        PartialEq::eq(&self.components(), &other.components())
-    }
-}
-
-
-impl PartialEq<str> for Path {
-    fn eq(&self, other: &str) -> bool {
-        self.eq(Path::new(other))
-    }
-}
-
-impl PartialEq<Path> for str {
-    fn eq(&self, other: &Path) -> bool {
-        other.eq(self)
+    impl From<&Path> for String {
+        fn from(value: &Path) -> Self {
+            value.0.to_owned()
+        }
     }
 }

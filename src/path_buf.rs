@@ -2,10 +2,41 @@ use alloc::borrow::ToOwned;
 use alloc::string::String;
 use core::borrow::Borrow;
 use core::ops::Deref;
+use core::str::FromStr;
+use crate::components::Component;
 use crate::path::Path;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct PathBuf(pub(crate) String);
+
+impl PathBuf {
+    pub(crate) fn push_component(&mut self, component: Component) {
+        match component {
+            Component::Root => {
+                self.0 = String::from("/");
+            }
+            Component::Current => {}
+            Component::Parent if self.0 == "/" => {
+                return
+            }
+            Component::Parent => {
+                let Some(parent) = self.0.trim_end_matches('/').rfind('/') else {
+                    return
+                };
+                self.0.replace_range(parent..self.0.len(), "");
+            }
+            Component::Name(n) => {
+                if self.0.ends_with('/') {
+                    self.0.push_str(n)
+                } else {
+                    self.0.push('/');
+                    self.0.push_str(n)
+                }
+            }
+        }
+    }
+}
 
 impl AsRef<Path> for PathBuf {
     fn as_ref(&self) -> &Path {
@@ -42,5 +73,19 @@ impl From<&str> for PathBuf {
 impl From<PathBuf> for String {
     fn from(value: PathBuf) -> Self {
         value.0
+    }
+}
+
+impl FromStr for PathBuf {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(PathBuf::from(s))
+    }
+}
+
+impl PartialEq for PathBuf {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_ref().eq(other)
     }
 }

@@ -1,7 +1,7 @@
 use core::iter::Filter;
 use core::str::Split;
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Component<'a> {
     Root,
     Current,

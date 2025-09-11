@@ -15,3 +15,4 @@ mod path;
 mod components;
 
 pub use path::Path;
+pub use components::{Component, Components};

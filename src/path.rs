@@ -109,6 +109,12 @@ impl PartialEq<Path> for str {
     }
 }
 
+impl AsRef<Path> for Path {
+    fn as_ref(&self) -> &Path {
+        self
+    }
+}
+
 #[cfg(feature = "alloc")]
 mod allocated_path {
     use alloc::borrow::ToOwned;

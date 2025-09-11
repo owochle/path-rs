@@ -18,6 +18,13 @@ impl<'a> Component<'a> {
             s => Component::Name(s)
         }
     }
+
+    pub fn as_str(&self) -> Option<&str> {
+        match self {
+            Component::Name(s) => Some(*s),
+            _ => None
+        }
+    }
 }
 
 #[derive(Debug)]

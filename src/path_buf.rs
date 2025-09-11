@@ -11,6 +11,21 @@ use crate::path::Path;
 pub struct PathBuf(pub(crate) String);
 
 impl PathBuf {
+    fn push(&mut self, s: &str) {
+        if self.0.ends_with('/') {
+            self.0.push_str(s)
+        } else {
+            self.0.push('/');
+            self.0.push_str(s)
+        }
+    }
+    fn pop(&mut self) {
+        let Some(parent) = self.0.trim_end_matches('/').rfind('/') else {
+            return
+        };
+        self.0.replace_range(parent..self.0.len(), "");
+    }
+
     pub(crate) fn push_component(&mut self, component: Component) {
         match component {
             Component::Root => {
@@ -21,18 +36,10 @@ impl PathBuf {
                 return
             }
             Component::Parent => {
-                let Some(parent) = self.0.trim_end_matches('/').rfind('/') else {
-                    return
-                };
-                self.0.replace_range(parent..self.0.len(), "");
+                self.pop()
             }
             Component::Name(n) => {
-                if self.0.ends_with('/') {
-                    self.0.push_str(n)
-                } else {
-                    self.0.push('/');
-                    self.0.push_str(n)
-                }
+                self.push(n)
             }
         }
     }

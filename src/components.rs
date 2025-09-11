@@ -14,7 +14,7 @@ impl<'a> Component<'a> {
         match s {
             "." => Component::Current,
             ".." => Component::Parent,
-            "/" => unreachable!("Not supposed"),
+            "/" => unreachable!("Not supported"),
             s => Component::Name(s)
         }
     }

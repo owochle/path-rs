@@ -145,7 +145,7 @@ mod allocated_path {
         }
 
         pub fn resolve<P: AsRef<Path>>(&self, other: P) -> PathBuf {
-            todo!()
+            other.as_ref().join(self)
         }
     }
 

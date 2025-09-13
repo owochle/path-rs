@@ -114,6 +114,12 @@ impl AsRef<Path> for Path {
     }
 }
 
+impl AsRef<Path> for str {
+    fn as_ref(&self) -> &Path {
+        Path::new(self)
+    }
+}
+
 #[cfg(feature = "alloc")]
 mod allocated_path {
     use alloc::borrow::ToOwned;
